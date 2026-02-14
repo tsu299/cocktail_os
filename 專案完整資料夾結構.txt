@@ -1,0 +1,33 @@
+cocktail_os/
+├── .git/                      # Git 版本控制資料夾 (隱藏)
+├── .gitattributes             # [手動建立] 強制統一換行符號設定
+├── .gitignore                 # [手動建立] 全域忽略清單 (node_modules, .env 等)
+│
+├── client/                    # [前端] React + Vite + Tailwind
+│   ├── node_modules/          # 前端依賴套件
+│   ├── public/                # 靜態資源 (Vite logo 等)
+│   ├── src/                   # 前端原始碼
+│   │   ├── assets/            # 圖片資源
+│   │   ├── App.css
+│   │   ├── App.tsx            # 主元件
+│   │   ├── index.css          # [已修改] 引入了 Tailwind 指令
+│   │   ├── main.tsx           # 入口點
+│   │   └── vite-env.d.ts
+│   ├── .gitignore             # 前端專用的忽略清單
+│   ├── eslint.config.js       # ESLint 設定
+│   ├── index.html             # 網頁入口 HTML
+│   ├── package.json           # 前端套件清單
+│   ├── postcss.config.js      # [手動補齊] PostCSS 設定
+│   ├── tailwind.config.js     # [手動補齊] Tailwind 設定
+│   ├── tsconfig.json          # TypeScript 設定
+│   ├── tsconfig.app.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts         # Vite 打包設定
+│
+└── server/                    # [後端] Express + Prisma
+    ├── node_modules/          # 後端依賴套件
+    ├── prisma/
+    │   └── schema.prisma      # [自動產生] 資料庫結構定義檔 (目前是空的)
+    ├── .env                   # [自動產生] 環境變數 (內含 DATABASE_URL)
+    ├── package.json           # 後端套件清單 (含 express, prisma, nodemon 等)
+    └── tsconfig.json          # [自動產生] TypeScript 設定

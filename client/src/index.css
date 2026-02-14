@@ -1,3 +1,517 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* ================================================
+   Cocktail OS — Wooden Liquor Cabinet
+   ================================================ */
+
+:root {
+  /* Wall & page */
+  --bg-wall: #e8e0d5;
+
+  /* Wood tones */
+  --wood-dark: #5c4033;
+  --wood-mid: #7a5c48;
+  --wood-light: #9c7c62;
+  --wood-highlight: #b89878;
+  --wood-shadow: #3e2a1e;
+
+  /* Cabinet interior */
+  --bg-cabinet: #f0ebe5;
+  --bg-card: #fdfbf8;
+  --bg-shelf: #d8cfc4;
+
+  /* Soft pastel palette */
+  --pastel-lavender: #d0bcf5;
+  --pastel-rose: #f0c4d4;
+  --pastel-peach: #f5d5b8;
+  --pastel-mint: #b8dcc8;
+  --pastel-sky: #b8ceea;
+
+  /* Card tints */
+  --tint-lavender: #f0eaf8;
+  --tint-rose: #faf0f3;
+  --tint-peach: #faf2ea;
+  --tint-mint: #edf6f0;
+  --tint-sky: #eaf0f8;
+
+  /* Accent — warm copper/sienna instead of purple */
+  --accent: #b08968;
+  --accent-light: #c8a488;
+  --accent-warm: #a07858;
+
+  /* Text */
+  --text-ink: #2d2a28;
+  --text-body: #4a4540;
+  --text-secondary: #787370;
+  --text-muted: #a8a3a0;
+  --text-faint: #ccc8c4;
+
+  --border: #d8d0c8;
+  --border-light: #e8e2dc;
+
+  --font-display: "Playfair Display", serif;
+  --font-hand: "Caveat", cursive;
+  --font-body: "Inter", sans-serif;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--text-body);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  /* Wall texture */
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"),
+    var(--bg-wall);
+}
+
+::selection {
+  background: var(--pastel-peach);
+  color: var(--text-ink);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--wood-mid);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--wood-dark);
+  border-radius: 3px;
+}
+
+/* ============================
+   Nav — floats above the cabinet
+   ============================ */
+.nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: rgba(92, 64, 51, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--wood-shadow);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.nav-inner {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 2rem;
+  height: 3.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--wood-highlight);
+}
+
+.nav-logo-text {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #f0ece4;
+}
+
+.nav-login {
+  font-family: var(--font-hand);
+  font-size: 1.05rem;
+  color: var(--wood-highlight);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-bottom: 1px dashed var(--wood-light);
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.nav-login:hover {
+  color: #f0ece4;
+}
+
+/* ============================
+   Page
+   ============================ */
+.page {
+  min-height: 100vh;
+  padding-bottom: 3rem;
+}
+
+/* ============================
+   The Cabinet — the main wooden frame
+   ============================ */
+.cabinet {
+  max-width: 68rem;
+  margin: 4.5rem auto 0;
+  padding: 0 1.5rem;
+}
+
+.cabinet-frame {
+  position: relative;
+  background: var(--bg-cabinet);
+  border-radius: 4px;
+  /* Wood frame border */
+  border: 6px solid var(--wood-mid);
+  box-shadow:
+    /* Outer shadow */
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    /* Inner bevel highlight */
+    inset 0 1px 0 var(--wood-highlight),
+    inset 0 -1px 0 var(--wood-shadow),
+    inset 1px 0 0 var(--wood-highlight),
+    inset -1px 0 0 var(--wood-shadow);
+  overflow: hidden;
+}
+
+/* Wood grain texture on the frame via pseudo-element */
+.cabinet-frame::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  pointer-events: none;
+  z-index: 1;
+  border: 6px solid transparent;
+  border-image: repeating-linear-gradient(90deg,
+      var(--wood-dark) 0px,
+      var(--wood-mid) 2px,
+      var(--wood-light) 4px,
+      var(--wood-mid) 6px,
+      var(--wood-dark) 8px) 6;
+}
+
+/* Top molding / crown */
+.cabinet-crown {
+  height: 12px;
+  background: linear-gradient(180deg,
+      var(--wood-highlight) 0%,
+      var(--wood-mid) 40%,
+      var(--wood-dark) 100%);
+  position: relative;
+  z-index: 2;
+}
+
+.cabinet-crown::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--wood-shadow);
+}
+
+/* Bottom base */
+.cabinet-base {
+  height: 10px;
+  background: linear-gradient(0deg,
+      var(--wood-highlight) 0%,
+      var(--wood-mid) 40%,
+      var(--wood-dark) 100%);
+  position: relative;
+  z-index: 2;
+}
+
+/* ============================
+   Cabinet header
+   ============================ */
+.cabinet-header {
+  padding: 2rem 2rem 1rem;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.cabinet-brand {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.cabinet-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text-ink);
+}
+
+.cabinet-title em {
+  font-style: italic;
+}
+
+.cabinet-handnote {
+  font-family: var(--font-hand);
+  font-size: 1.2rem;
+  color: var(--accent);
+  display: inline-block;
+  transform: rotate(-1deg);
+  margin-bottom: 0.25rem;
+}
+
+.cabinet-subtitle {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  max-width: 26rem;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+/* ============================
+   Shelf — realistic wooden shelf
+   ============================ */
+.shelf {
+  position: relative;
+  z-index: 2;
+  padding: 0 1rem;
+}
+
+/* The visible shelf plank */
+.shelf-plank {
+  position: relative;
+  padding: 0 0.5rem;
+}
+
+/* Items sit on top of the shelf */
+.shelf-items {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 0.5rem 0;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 3;
+}
+
+@media (min-width: 1024px) {
+  .shelf-items {
+    gap: 1.5rem;
+    padding: 1.5rem 1rem 0;
+  }
+}
+
+/* The actual wood surface */
+.shelf-wood {
+  position: relative;
+  height: 16px;
+  background: linear-gradient(180deg,
+      var(--wood-highlight) 0%,
+      var(--wood-mid) 35%,
+      var(--wood-light) 60%,
+      var(--wood-mid) 85%,
+      var(--wood-dark) 100%);
+  border-radius: 0 0 2px 2px;
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  z-index: 2;
+}
+
+/* Wood grain lines */
+.shelf-wood::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(90deg,
+      transparent 0px,
+      rgba(0, 0, 0, 0.03) 20px,
+      transparent 22px,
+      transparent 45px,
+      rgba(0, 0, 0, 0.02) 48px,
+      transparent 50px);
+  border-radius: inherit;
+}
+
+/* Front edge lip */
+.shelf-wood::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 2px;
+  right: 2px;
+  height: 4px;
+  background: linear-gradient(180deg,
+      var(--wood-mid) 0%,
+      var(--wood-dark) 100%);
+  border-radius: 0 0 2px 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.shelf-label {
+  position: absolute;
+  right: 1.5rem;
+  top: 3px;
+  font-size: 0.4375rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  z-index: 3;
+}
+
+/* Gap between shelves */
+.shelf+.shelf {
+  margin-top: 2rem;
+}
+
+/* ============================
+   Cabinet Item
+   ============================ */
+.cabinet-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 180px;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .cabinet-item {
+    width: 200px;
+  }
+}
+
+.cabinet-item:hover {
+  transform: translateY(-8px);
+}
+
+/* Illustration — overflows out of its bounding box */
+.cabinet-item-illust {
+  width: 160px;
+  height: 160px;
+  margin-bottom: -8px;
+  position: relative;
+  z-index: 4;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
+}
+
+@media (min-width: 768px) {
+  .cabinet-item-illust {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+.cabinet-item:hover .cabinet-item-illust {
+  transform: scale(1.06) rotate(-1deg);
+}
+
+/* Label card */
+.cabinet-item-label {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 3px;
+  padding: 1rem 0.875rem 0.75rem;
+  text-align: center;
+  width: 100%;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.3s, border-color 0.3s;
+  position: relative;
+  z-index: 3;
+}
+
+.cabinet-item:hover .cabinet-item-label {
+  border-color: var(--accent-light);
+  box-shadow: var(--shadow-hover);
+}
+
+.cabinet-item-number {
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  color: var(--text-faint);
+  margin-bottom: 0.125rem;
+}
+
+.cabinet-item-title {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text-ink);
+  line-height: 1.3;
+  margin-bottom: 0.125rem;
+}
+
+.cabinet-item-sub {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.375rem;
+}
+
+.cabinet-item-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.cabinet-item-note {
+  font-family: var(--font-hand);
+  font-size: 0.9375rem;
+  color: var(--accent);
+  margin-top: 0.375rem;
+  transform: rotate(-0.8deg);
+  display: inline-block;
+}
+
+.cabinet-item-phase {
+  font-size: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-top: 0.25rem;
+}
+
+/* ============================
+   Footer inside cabinet
+   ============================ */
+.cabinet-footer {
+  padding: 1.25rem 2rem;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  position: relative;
+  z-index: 2;
+}
+
+.footer-hand {
+  font-family: var(--font-hand);
+  font-size: 0.9375rem;
+  color: var(--accent);
+}
