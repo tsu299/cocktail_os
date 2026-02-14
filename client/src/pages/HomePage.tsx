@@ -1,5 +1,7 @@
-import { motion } from "framer-motion";
+import { useState, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Wine } from "lucide-react";
+import CabinetScene from "@/components/CabinetScene";
 import {
     IllustWiki,
     IllustBar,
@@ -8,72 +10,91 @@ import {
     IllustAI,
 } from "@/components/Illustrations";
 
-/** 酒櫃內容物 */
-const shelfTop = [
-    {
-        number: "01",
+/** Module metadata */
+interface ModuleMeta {
+    id: string;
+    title: string;
+    sub: string;
+    desc: string;
+    note: string;
+    Illust: React.ComponentType<{ className?: string }>;
+}
+
+const modules: Record<string, ModuleMeta> = {
+    wiki: {
+        id: "wiki",
         title: "調酒百科",
         sub: "WIKI",
-        desc: "IBA 標準配方、經典酒譜與風味索引",
-        note: "80+ 經典酒譜",
-        phase: "Phase 1",
+        desc: "收錄 IBA 標準配方與經典酒譜，完整的風味描述、材料索引與製作步驟。",
+        note: "80+ 經典酒譜，持續更新中",
         Illust: IllustWiki,
     },
-    {
-        number: "02",
+    bar: {
+        id: "bar",
         title: "我的酒櫃",
         sub: "MY BAR",
-        desc: "記錄你擁有的每一瓶酒，搭配可做酒譜",
-        note: "你的個人庫存",
-        phase: "Phase 1",
+        desc: "記錄你擁有的每一瓶酒，搭配酒譜自動比對可做的調酒。",
+        note: "告訴你今晚能做什麼",
         Illust: IllustBar,
     },
-    {
-        number: "03",
+    dice: {
+        id: "dice",
         title: "靈感骰子",
         sub: "RANDOMIZER",
-        desc: "不知道喝什麼？搖一搖讓骰子決定",
+        desc: "不知道喝什麼？指定基酒或全部隨機，搖一搖就有答案。",
         note: "搖一搖 ✦",
-        phase: "Phase 2",
         Illust: IllustDice,
     },
-];
-
-const shelfBottom = [
-    {
-        number: "04",
+    map: {
+        id: "map",
         title: "跑吧日記",
         sub: "BAR HOPPING",
-        desc: "紀錄每一次跑吧的足跡與私房筆記",
+        desc: "紀錄每一次跑吧的足跡：去了哪間店、喝了什麼、私房筆記。",
         note: "你的酒吧地圖",
-        phase: "Phase 2",
         Illust: IllustMap,
     },
-    {
-        number: "05",
+    ai: {
+        id: "ai",
         title: "AI 調酒師",
         sub: "COPILOT",
-        desc: "根據庫存與心情，AI 推薦專屬配方",
+        desc: "給 AI 你的庫存和心情，推薦能做的調酒或發明新配方。",
         note: "專屬調酒顧問",
-        phase: "Phase 2",
         Illust: IllustAI,
     },
-];
-
-const fadeUp = {
-    hidden: { opacity: 0, y: 12 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
-};
-
-const stagger = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
 };
 
 /**
- * Cocktail OS 首頁 — 木製酒櫃風格
+ * Cocktail OS 首頁
+ *
+ * 一整幅酒櫃插畫，hover 物品 → 便籤彈出
  */
 export default function HomePage() {
+    const [activeZone, setActiveZone] = useState<string | null>(null);
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    const cabinetRef = useRef<HTMLDivElement>(null);
+
+    const handleZoneEnter = useCallback((id: string) => {
+        setActiveZone(id);
+    }, []);
+
+    const handleZoneLeave = useCallback(() => {
+        setActiveZone(null);
+    }, []);
+
+    const handleMouseMove = useCallback(
+        (e: React.MouseEvent) => {
+            if (!cabinetRef.current) return;
+            const rect = cabinetRef.current.getBoundingClientRect();
+            setMousePos({
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top,
+            });
+        },
+        []
+    );
+
+    const activeMod = activeZone ? modules[activeZone] : null;
+
     return (
         <div className="page">
             {/* Nav */}
@@ -87,114 +108,105 @@ export default function HomePage() {
                 </div>
             </nav>
 
-            {/* === The Cabinet === */}
-            <div className="cabinet">
-                <div className="cabinet-frame">
-                    {/* Crown molding */}
-                    <div className="cabinet-crown" />
+            {/* Title */}
+            <motion.div
+                className="page-header"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+            >
+                <div className="page-brand">COCKTAIL OS</div>
+                <h1 className="page-title">
+                    你的<em>數位酒櫃</em>
+                </h1>
+                <div className="page-handnote">探索櫃上的物品 ✦</div>
+            </motion.div>
 
-                    {/* Header */}
-                    <motion.div
-                        className="cabinet-header"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <div className="cabinet-brand">COCKTAIL OS</div>
-                        <h1 className="cabinet-title">
-                            數位<em>酒櫃</em>
-                        </h1>
-                        <div className="cabinet-handnote">挑一瓶，開始今晚的旅程 ✦</div>
-                        <p className="cabinet-subtitle">
-                            探索經典調酒、管理庫存、紀錄跑吧，或讓 AI 推薦配方
-                        </p>
-                    </motion.div>
+            {/* === Cabinet Scene === */}
+            <div className="cabinet-wrap">
+                <motion.div
+                    ref={cabinetRef}
+                    className="cabinet-scene"
+                    onMouseMove={handleMouseMove}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                >
+                    <CabinetScene
+                        activeZone={activeZone}
+                        onZoneEnter={handleZoneEnter}
+                        onZoneLeave={handleZoneLeave}
+                    />
 
-                    {/* === Shelf 1 === */}
-                    <motion.div
-                        className="shelf"
-                        variants={stagger}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                    >
-                        <div className="shelf-plank">
-                            <div className="shelf-items">
-                                {shelfTop.map((item) => {
-                                    const Illust = item.Illust;
-                                    return (
-                                        <motion.div
-                                            key={item.number}
-                                            className="cabinet-item"
-                                            variants={fadeUp}
-                                        >
-                                            <Illust className="cabinet-item-illust" />
-                                            <div className="cabinet-item-label">
-                                                <div className="cabinet-item-number">No. {item.number}</div>
-                                                <div className="cabinet-item-title">{item.title}</div>
-                                                <div className="cabinet-item-sub">{item.sub}</div>
-                                                <div className="cabinet-item-desc">{item.desc}</div>
-                                                <div className="cabinet-item-note">{item.note}</div>
-                                                <div className="cabinet-item-phase">{item.phase}</div>
-                                            </div>
-                                        </motion.div>
-                                    );
-                                })}
-                            </div>
-                            {/* Shelf wood plank */}
-                            <div className="shelf-wood">
-                                <span className="shelf-label">SHELF 01</span>
-                            </div>
-                        </div>
-                    </motion.div>
+                    {/* === Sticky Note Popup === */}
+                    <AnimatePresence>
+                        {activeMod && (
+                            <StickyNote
+                                mod={activeMod}
+                                mouseX={mousePos.x}
+                                mouseY={mousePos.y}
+                            />
+                        )}
+                    </AnimatePresence>
+                </motion.div>
+            </div>
 
-                    {/* === Shelf 2 === */}
-                    <motion.div
-                        className="shelf"
-                        variants={stagger}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                    >
-                        <div className="shelf-plank">
-                            <div className="shelf-items">
-                                {shelfBottom.map((item) => {
-                                    const Illust = item.Illust;
-                                    return (
-                                        <motion.div
-                                            key={item.number}
-                                            className="cabinet-item"
-                                            variants={fadeUp}
-                                        >
-                                            <Illust className="cabinet-item-illust" />
-                                            <div className="cabinet-item-label">
-                                                <div className="cabinet-item-number">No. {item.number}</div>
-                                                <div className="cabinet-item-title">{item.title}</div>
-                                                <div className="cabinet-item-sub">{item.sub}</div>
-                                                <div className="cabinet-item-desc">{item.desc}</div>
-                                                <div className="cabinet-item-note">{item.note}</div>
-                                                <div className="cabinet-item-phase">{item.phase}</div>
-                                            </div>
-                                        </motion.div>
-                                    );
-                                })}
-                            </div>
-                            <div className="shelf-wood">
-                                <span className="shelf-label">SHELF 02</span>
-                            </div>
-                        </div>
-                    </motion.div>
-
-                    {/* Footer inside cabinet */}
-                    <footer className="cabinet-footer">
-                        <span>© 2026 COCKTAIL OS</span>
-                        <span className="footer-hand">Built with care ✦</span>
-                    </footer>
-
-                    {/* Base molding */}
-                    <div className="cabinet-base" />
-                </div>
+            {/* Footer */}
+            <div className="page-footer-wrap">
+                <footer className="page-footer">
+                    <span>© 2026 COCKTAIL OS</span>
+                    <span className="footer-hand">Built with care ✦</span>
+                </footer>
             </div>
         </div>
+    );
+}
+
+/* ─── Sticky Note ─── */
+function StickyNote({
+    mod,
+    mouseX,
+    mouseY,
+}: {
+    mod: ModuleMeta;
+    mouseX: number;
+    mouseY: number;
+}) {
+    const Illust = mod.Illust;
+
+    // Position note near mouse but offset to avoid covering the object
+    // Clamp so it doesn't go off-screen
+    const noteStyle: React.CSSProperties = {
+        left: `${Math.min(mouseX + 20, window.innerWidth * 0.6)}px`,
+        top: `${Math.max(mouseY - 60, 10)}px`,
+    };
+
+    return (
+        <motion.div
+            className="sticky-note"
+            style={noteStyle}
+            initial={{ opacity: 0, scale: 0.9, rotate: -2 }}
+            animate={{ opacity: 1, scale: 1, rotate: -1.5 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.18 }}
+        >
+            {/* Tape / pin at top */}
+            <div className="sticky-tape" />
+
+            <div className="sticky-inner">
+                {/* Text side */}
+                <div className="sticky-text">
+                    <div className="sticky-title">{mod.title}</div>
+                    <div className="sticky-sub">{mod.sub}</div>
+                    <p className="sticky-desc">{mod.desc}</p>
+                    <div className="sticky-note-hand">{mod.note}</div>
+                </div>
+
+                {/* Illustration side */}
+                <div className="sticky-illust-wrap">
+                    <Illust className="sticky-illust" />
+                </div>
+            </div>
+        </motion.div>
     );
 }
